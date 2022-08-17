@@ -21,6 +21,8 @@ from bqapi.util import fetch_blob
 
 For development, follow [this guide](https://towardsdatascience.com/how-to-upload-your-python-package-to-pypi-de1b363a1b3) and [this repo](https://github.com/gmyrianthous/example-publish-pypi).
 
+## Added GitHub Action 
+
 ### Summary
 
 1. Clone repo
