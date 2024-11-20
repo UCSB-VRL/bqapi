@@ -13,19 +13,20 @@ import warnings
 
 import requests
 import requests.packages.urllib3 as urllib3
-from requests.packages.urllib3.packages import six
+import six
 from .monkeypatch import monkeypatch_method
 
 
 
 REQUESTS_V = [int(s) for s in requests.__version__.split('.')]
 
-if REQUESTS_V < [2, 4, 0] or  REQUESTS_V > [2, 19, 0]:
+print(REQUESTS_V)
+if REQUESTS_V < [2, 4, 0] or  REQUESTS_V > [2, 32, 3]:
     warnings.warn("""\
-We need to patch requests 2.4.0 up to 2.19.0, make sure your version of requests \
+We need to patch requests 2.4.0 up to 2.32.3, make sure your version of requests \
 needs this patch, greater than 2.4.3 we do not know if this patch applys."""
                   )
-    raise ImportError('Requests 2.4.0 to 2.10.0 is required!')
+    raise ImportError('Requests 2.4.0 to 2.32.3 is required!')
 #elif requests_v > [3, 0, 0]:
 #    #does not require this patch
 #    pass

@@ -799,7 +799,7 @@ def model_fields(dbo, baseuri=None):
         if fn is None:
             continue
         # Map is callable, then call
-        if isinstance(fn, collections.Callable):
+        if isinstance(fn, collections.abc.Callable):
             fn, attr_val = fn(dbo, fn, baseuri)
         else:
             attr_val = getattr(dbo, fn, None)
