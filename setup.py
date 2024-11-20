@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='bqapi-ucsb',
-    version='1.0.1',
+    version='1.0.2',
     author="Bisque Team",
     author_email='manj@ucsb.edu',
     packages=find_packages('src'),
