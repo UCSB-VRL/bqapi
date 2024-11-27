@@ -4,7 +4,9 @@ from threading import Thread
 import socket
 import errno
 import tempfile
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 import os
 from math import ceil
 import queue
@@ -62,9 +64,12 @@ class Feature(object):
         for (image, mask, gobject) in resource_list:
             sub = etree.SubElement(resource, 'feature')
             query = []
-            if image: query.append('image=%s' % urllib.parse.quote(image))
-            if mask: query.append('mask=%s' % urllib.parse.quote(mask))
-            if gobject: query.append('gobject=%s' % urllib.parse.quote(gobject))
+            if image:
+                query.append('image=%s' % urllib.parse.quote(image))
+            if mask:
+                query.append('mask=%s' % urllib.parse.quote(mask))
+            if gobject:
+                query.append('gobject=%s' % urllib.parse.quote(gobject))
             query = '&'.join(query)
             sub.attrib['uri'] = '%s?%s'%(url,query)
 
@@ -107,7 +112,7 @@ class Feature(object):
             os.remove(hdf5.filename) #remove file from temp directory
             raise FeatureError('%s:Error occured during feature calculations' % status)
         table = hdf5.root.values
-        status_table = hdf5.root.status
+        # status_table = hdf5.root.status # to get the status
         feature_vector = table[:]['feature']
         hdf5.close()
         os.remove(hdf5.filename) #remove file from temp directory
@@ -216,35 +221,35 @@ class ParallelFeature(Feature):
         self.chunk_size = n
 
 
-    def calculate_request_plan(self, l):
+    def calculate_request_plan(self, rl):
         """
             Tries to figure out the best configuration
             of concurrent requests and sizes of those
             requests based on the size of the total request
              and pre-set parameters
 
-            @param: l - the list of requests
+            @param: rl - the list of requests
 
             @return: chunk_size - the amount of resources for request
             @return: thread_num - the amount of concurrent requests
         """
-        if len(l)>self.MaxThread*self.MaxChunk:
+        if len(rl)>self.MaxThread*self.MaxChunk:
             return (self.MaxThread, self.MaxChunk)
         else:
-            if len(l)/float(self.MaxThread)>=self.MinChunk:
+            if len(rl)/float(self.MaxThread)>=self.MinChunk:
                 return (self.MaxThread, ceil(self.MaxChunk/float(self.MaxThread)))
             else:
-                t = ceil(len(l)/float(self.MinChunk))
-                return (t, ceil(len(l)/float(t)))
+                t = ceil(len(rl)/float(self.MinChunk))
+                return (t, ceil(len(rl)/float(t)))
 
 
-    def chunk(self, l, chunk_size):
+    def chunk(self, rl, chunk_size):
         """
-           @param: l - list
+           @param: rl - list
            @return: list of resource and sets the amount of parallel requests
         """
-        for i in range(0, len(l), chunk_size):
-            yield l[i:i+chunk_size]
+        for i in range(0, len(rl), chunk_size):
+            yield rl[i:i+chunk_size]
 
 
     def fetch(self, session, name, resource_list, path=None):
@@ -319,7 +324,7 @@ class ParallelFeature(Feature):
                                         table.flush()
                                         status_table.flush()
                         except Exception as e:
-                            log.exception('Could not read hdf5 file')
+                            log.exception(f'Could not read hdf5 file : {e}')
                         finally:
                             log.debug('Clean up: removing %s' % temp_path)
                             if os.path.exists(temp_path):
@@ -367,8 +372,10 @@ class ParallelFeature(Feature):
             thread_num = ceil(self.thread_num)
             chunk_size = ceil(self.chunk_size)
 
-            if thread_num <= 0: thread_num = 1
-            if chunk_size <= 0: chunk_size = 1
+            if thread_num <= 0:
+                thread_num = 1
+            if chunk_size <= 0:
+                chunk_size = 1
 
         else:
             thread_num, chunk_size = self.calculate_request_plan(resource_list)
