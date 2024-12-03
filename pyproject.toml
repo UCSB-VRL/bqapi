@@ -1,0 +1,7 @@
+[tool.ruff]
+# Follow Flake8's behavior
+lint.select = ["E", "F", "W", "C90"]  # Enables Flake8-compatible rules
+lint.ignore = []                      # Add rules to ignore
+line-length = 79                 
+exclude = ["venv", ".git", "__pycache__"] 
+lint.mccabe.max-complexity = 25  # Set your desired threshold
