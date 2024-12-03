@@ -1,14 +1,14 @@
 """
-    A patch to format_header_param in urllib3
+A patch to format_header_param in urllib3
 
-    If a value has unicode the header will be returned
-    as 'name="value"; name*=utf-8''value' else
-    'name="value"'
+If a value has unicode the header will be returned
+as 'name="value"; name*=utf-8''value' else
+'name="value"'
 """
 
-
 import email.utils
-#import mimetypes
+
+# import mimetypes
 import warnings
 
 import requests
@@ -17,20 +17,20 @@ import six
 from .monkeypatch import monkeypatch_method
 
 
-
-REQUESTS_V = [int(s) for s in requests.__version__.split('.')]
+REQUESTS_V = [int(s) for s in requests.__version__.split(".")]
 
 print(REQUESTS_V)
-if REQUESTS_V < [2, 4, 0] or  REQUESTS_V > [2, 32, 3]:
+if REQUESTS_V < [2, 4, 0] or REQUESTS_V > [2, 32, 3]:
     warnings.warn("""\
-We need to patch requests 2.4.0 up to 2.32.3, make sure your version of requests \
-needs this patch, greater than 2.4.3 we do not know if this patch applys."""
-                  )
-    raise ImportError('Requests 2.4.0 to 2.32.3 is required!')
-#elif requests_v > [3, 0, 0]:
+We need to patch requests 2.4.0 up to 2.32.3, make sure your version of
+requests needs this patch, greater than 2.4.3 we do not know if this
+patch applys.""")
+    raise ImportError("Requests 2.4.0 to 2.32.3 is required!")
+# elif requests_v > [3, 0, 0]:
 #    #does not require this patch
 #    pass
 else:
+
     @monkeypatch_method(urllib3.fields)
     def format_header_param(name, value):
         """
@@ -48,18 +48,20 @@ else:
         if not any(ch in value for ch in '"\\\r\n'):
             result = '%s="%s"' % (name, value)
             try:
-                result.encode('ascii')
+                result.encode("ascii")
             except UnicodeEncodeError:
                 pass
             else:
                 return result
 
         value_encode = value
-        if not six.PY3: # Python 2:
-            value_encode = value.encode('utf-8')
+        if not six.PY3:  # Python 2:
+            value_encode = value.encode("utf-8")
 
         value = '%s="%s"; %s*=%s' % (
-            name, value,
-            name, email.utils.encode_rfc2231(value_encode, 'utf-8')
+            name,
+            value,
+            name,
+            email.utils.encode_rfc2231(value_encode, "utf-8"),
         )
         return value
