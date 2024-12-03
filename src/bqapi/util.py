@@ -9,7 +9,7 @@ from six.moves import urllib
 
 # from lxml import etree as ET
 # from lxml import etree
-# from .xmldict import xml2d, d2xm
+# from .xmldict import xml2d, d2xml
 
 log = logging.getLogger("bqapi.util")
 

@@ -79,8 +79,9 @@ try:
 except ImportError:
     import xml.etree.ElementTree as etree
 
-from .types import BQMex, BQNode, BQFactory
-from .util import d2xml  # parse_qs, make_qs, xml2d, d2xml, normalize_unicode
+from .bqclass import BQMex, BQNode, BQFactory
+# from .util import d2xml  # parse_qs, make_qs, xml2d, d2xml, normalize_unicode
+from .xmldict import d2xml
 from .services import ServiceFactory
 from .exception import BQCommError, BQApiError
 
