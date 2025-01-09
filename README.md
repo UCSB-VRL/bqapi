@@ -1,5 +1,7 @@
 # Bisque API for Python 3
 
+[![Upload Python Package](https://github.com/UCSB-VRL/bqapi/actions/workflows/python-publish.yml/badge.svg)](https://github.com/UCSB-VRL/bqapi/actions/workflows/python-publish.yml)
+
 [Full Documentation](https://github.com/UCSB-VRL/bisqueUCSB)
 
 For development, follow [this guide](https://towardsdatascience.com/how-to-upload-your-python-package-to-pypi-de1b363a1b3) and [this repo](https://github.com/gmyrianthous/example-publish-pypi).

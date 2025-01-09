@@ -3,9 +3,10 @@ from setuptools import setup, find_packages
 
 setup(
     name='bqapi-ucsb',
-    version='1.0.1',
+    version='1.0.2',
     author="Bisque Team",
-    author_email='manj@ucsb.edu',
+    author_email='amil@ucsb.edu',
+    description="""Python API for interacting with BisQue""",
     packages=find_packages('src'),
     package_dir={'': 'src'},
     keywords='API Bisque',
@@ -13,5 +14,4 @@ setup(
     install_requires=[
           'six', 'lxml', 'requests==2.32.3', 'requests-toolbelt',
       ],
-
 )
