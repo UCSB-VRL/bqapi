@@ -12,9 +12,6 @@ setup(
     keywords='API Bisque',
     url='https://github.com/UCSB-VRL/bisqueUCSB',
     install_requires=[
-        'six',
-        'lxml',
-        'requests==2.10.0',
-        'requests-toolbelt',
-    ],
+          'six', 'lxml', 'requests==2.32.3', 'requests-toolbelt',
+      ],
 )
