@@ -1,12 +1,20 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.4
 Name: bqapi-ucsb
-Version: 1.0.1
+Version: 1.0.4
+Summary: Python API for interacting with BisQue
 Home-page: https://github.com/UCSB-VRL/bisqueUCSB
 Author: Bisque Team
-Author-email: manj@ucsb.edu
+Author-email: amil@ucsb.edu
 Keywords: API Bisque
 License-File: LICENSE.txt
 Requires-Dist: six
 Requires-Dist: lxml
 Requires-Dist: requests==2.32.3
 Requires-Dist: requests-toolbelt
+Dynamic: author
+Dynamic: author-email
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: summary
