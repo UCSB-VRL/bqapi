@@ -1,5 +1,3 @@
-from comm import BQSession
-import comm
+from .comm import BQSession
+from . import comm
 import types
-
-__all__ = ["comm", "types", "BQSession"]
