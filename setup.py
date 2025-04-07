@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='bqapi-ucsb',
-    version='1.0.2',
+    version='1.0.3',
     author="Bisque Team",
     author_email='amil@ucsb.edu',
     description="""Python API for interacting with BisQue""",
