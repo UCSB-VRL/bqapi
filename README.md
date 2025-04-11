@@ -23,7 +23,7 @@ from bqapi.util import fetch_blob
 
 For development, follow [this guide](https://towardsdatascience.com/how-to-upload-your-python-package-to-pypi-de1b363a1b3) and [this repo](https://github.com/gmyrianthous/example-publish-pypi).
 
-## Added GitHub Action 
+## Added GitHub Action
 
 ### Summary
 
@@ -34,4 +34,3 @@ For development, follow [this guide](https://towardsdatascience.com/how-to-uploa
 5. Make sure to have PyPi account credentials
 6. run `twine upload dist/*` from  main folder
 7. Enter username and password
-

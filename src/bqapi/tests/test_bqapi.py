@@ -1,10 +1,9 @@
 import pytest
-
 from lxml import etree
-from bqapi import BQSession
-from bqapi.bqclass import BQFactory
 from tg import config
 
+from bqapi import BQSession
+from bqapi.bqclass import BQFactory
 
 pytestmark = pytest.mark.functional
 
@@ -19,7 +18,7 @@ def test_load (session):
     #bq = BQSession()
     #bq.init_local (user, passwd, bisque_root = host, create_mex = False)
     x = session.load ('/data_service/image/?limit=10')
-    print "loading /data_service/images->", BQFactory.to_string((x))
+    print "loading /data_service/images->", BQFactory.to_string(x)
 
 
 def test_load_pixels(session):

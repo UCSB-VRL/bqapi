@@ -1,21 +1,22 @@
 # import threading
-from threading import Thread
-import socket
 import errno
-import tempfile
-import urllib.request
-import urllib.parse
-import urllib.error
-import os
-from math import ceil
-import queue
 import logging
+import os
+import queue
+import socket
+import tempfile
+import urllib.error
+import urllib.parse
+import urllib.request
 import warnings
 from collections import namedtuple
+from math import ceil
+from threading import Thread
+
+from .exception import BQCommError
 
 # import numpy as np
 
-from .exception import BQCommError
 
 try:  # checks for lxml if not found uses python xml
     from lxml import etree
@@ -36,10 +37,12 @@ MAX_ATTEMPTS = 5
 FeatureResource = namedtuple("FeatureResource", ["image", "mask", "gobject"])
 FeatureResource.__new__.__defaults__ = (None, None, None)
 
+
 class FeatureError(Exception):
     """
     Feature Communication Exception
     """
+
 
 class Feature(object):
     def fetch(self, session, name, resource_list, path=None):
@@ -74,8 +77,7 @@ class Feature(object):
             query = "&".join(query)
             sub.attrib["uri"] = "%s?%s" % (url, query)
 
-        log.debug("Fetch Feature %s for %s resources" % (name,
-                            len(resource_list)))
+        log.debug("Fetch Feature %s for %s resources" % (name, len(resource_list)))
 
         if path is None:
             f = tempfile.NamedTemporaryFile(
@@ -130,8 +132,7 @@ class Feature(object):
             status = status[index[0]][0]
             hdf5.close()
             os.remove(hdf5.filename)  # remove file from temp directory
-            raise FeatureError("%s:Error occured during feature calculations"
-                                                % status)
+            raise FeatureError("%s:Error occured during feature calculations" % status)
         table = hdf5.root.values
         # status_table = hdf5.root.status # to get the status
         feature_vector = table[:]["feature"]
@@ -150,8 +151,8 @@ class Feature(object):
         @return: feature length
         """
         xml = session.fetchxml("/features/%s" % name)
-        return int(xml.find(
-                    'feature/tag[@name="feature_length"]').attrib.get("value"))
+        return int(xml.find('feature/tag[@name="feature_length"]').attrib.get("value"))
+
 
 class ParallelFeature(Feature):
     MaxThread = 8
@@ -200,8 +201,7 @@ class ParallelFeature(Feature):
                 else:
                     break
 
-    def request_thread_pool(self, request_queue, errorcb=None,
-                                    thread_count=MaxThread):
+    def request_thread_pool(self, request_queue, errorcb=None, thread_count=MaxThread):
         """
         Runs the BQRequestThread
 
@@ -293,8 +293,7 @@ class ParallelFeature(Feature):
             log.warning("Warning no resources were provided")
             return
 
-        log.debug("Exctracting %s on %s resources" % (name,
-                                              len(resource_list)))
+        log.debug("Exctracting %s on %s resources" % (name, len(resource_list)))
 
         if path is None:
             f = tempfile.TemporaryFile(suffix=".h5", dir=tempfile.gettempdir())
@@ -338,8 +337,7 @@ class ParallelFeature(Feature):
                                     temp_status_table = hdf5temp.root.status
                                     if not hasattr(hdf5.root, "values"):
                                         temp_table.copy(hdf5.root, "values")
-                                        temp_status_table.copy(hdf5.root,
-                                                                "status")
+                                        temp_status_table.copy(hdf5.root, "status")
                                     else:
                                         table = hdf5.root.values
                                         status_table = hdf5.root.status
@@ -420,8 +418,7 @@ class ParallelFeature(Feature):
         else:
             thread_num, chunk_size = self.calculate_request_plan(resource_list)
 
-        for partial_resource_list in self.chunk(resource_list,
-                                                int(chunk_size)):
+        for partial_resource_list in self.chunk(resource_list, int(chunk_size)):
             request_queue.put(request_factory(partial_resource_list))
 
         w = WriteHDF5Thread(write_queue)
@@ -462,5 +459,4 @@ class ParallelFeature(Feature):
 
         @return: a list of features as numpy array
         """
-        return super(ParallelFeature, self).fetch_vector(session, name,
-                                                         resource_list)
+        return super(ParallelFeature, self).fetch_vector(session, name, resource_list)

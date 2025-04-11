@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: bqapi-ucsb
-Version: 1.0.4
+Version: 1.0.6
 Summary: Python API for interacting with BisQue
 Home-page: https://github.com/UCSB-VRL/bisqueUCSB
 Author: Bisque Team

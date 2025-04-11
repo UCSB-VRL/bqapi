@@ -22,8 +22,7 @@ class BQCommError(BQException):
 
     def __str__(self):
         content = (
-            "%s...%s"
-            % (self.response.content[:64], self.response.content[-64:])
+            "%s...%s" % (self.response.content[:64], self.response.content[-64:])
             if len(self.response.content) > 64
             else self.response.content
         )

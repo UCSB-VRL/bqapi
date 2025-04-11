@@ -1,11 +1,8 @@
-import sys
 import collections
+import logging
+import sys
 
 from bqapi import BQSession
-
-
-import logging
-
 
 # logging.basicConfig(filename='BlockableModule.log',level=logging.DEBUG) #!!!
 log = logging.getLogger("bqapi.blockable_module")
@@ -21,17 +18,13 @@ class BlockableModule(object):
 
         # check for list parameters
         params = bq.get_mex_inputs()
-        if isinstance(params, dict) or not isinstance(
-            params, collections.Iterable
-        ):
+        if isinstance(params, dict) or not isinstance(params, collections.Iterable):
             params = [params]
         # pass values directly as args
         for single_params in params:
             for param_name in single_params:
                 if "value" in single_params[param_name]:
-                    single_params[param_name] = single_params[param_name].get(
-                        "value"
-                    )
+                    single_params[param_name] = single_params[param_name].get("value")
 
         # TODO: measure block startup time
         self.start_block(bq, params)

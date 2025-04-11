@@ -1,12 +1,15 @@
 ##
 ## Add local fixtures here
-import pytest
 from collections import OrderedDict, namedtuple
 
+import pytest
 from bq.util.bunch import Bunch
 from bq.util.mkdir import _mkdir
-from .util import  fetch_file
+
 from bqapi import BQServer
+
+from .util import fetch_file
+
 
 @pytest.fixture(scope="module")
 def server():
