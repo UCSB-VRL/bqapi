@@ -47,7 +47,7 @@ else:
             The value of the parameter, provided as a unicode string.
         """
         if not any(ch in value for ch in '"\\\r\n'):
-            result = '%s="%s"' % (name, value)
+            result = '{}="{}"'.format(name, value)
             try:
                 result.encode("ascii")
             except UnicodeEncodeError:
@@ -59,7 +59,7 @@ else:
         if not six.PY3:  # Python 2:
             value_encode = value.encode("utf-8")
 
-        value = '%s="%s"; %s*=%s' % (
+        value = '{}="{}"; {}*={}'.format(
             name,
             value,
             name,

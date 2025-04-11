@@ -113,7 +113,7 @@ class MexAuth(AuthBase):
         elif user in token.split(":")[0]:  # check if token contains user
             self.username = "Mex %s" % (token)
         else:
-            self.username = "Mex %s:%s" % (user, token)
+            self.username = "Mex {}:{}".format(user, token)
 
     def __call__(self, r):
         """
@@ -132,7 +132,7 @@ class BQServer(Session):
     """
 
     def __init__(self):
-        super(BQServer, self).__init__()
+        super().__init__()
         # Disable https session authentication..
         # self.verify = False
         self.root = None
@@ -193,7 +193,7 @@ class BQServer(Session):
             raise BQApiError("No root provided")
 
         # query
-        query = ["%s=%s" % (k, v) for k, v in urllib.parse.parse_qsl(u.query, True)]
+        query = ["{}={}".format(k, v) for k, v in urllib.parse.parse_qsl(u.query, True)]
         unordered_query = []
         ordered_query = []
 
@@ -205,7 +205,7 @@ class BQServer(Session):
                     ordered_query.append("%s=%s" % odict.popitem(False))
 
         if params:
-            unordered_query = ["%s=%s" % (k, v) for k, v in list(params.items())]
+            unordered_query = ["{}={}".format(k, v) for k, v in list(params.items())]
 
         query = query + unordered_query + ordered_query
         query = "&".join(query)
@@ -290,7 +290,7 @@ class BQServer(Session):
         @exception: BQCommError if the requests returns an error code and
         message
         """
-        log.debug("POST %s req %s" % (url, headers))
+        log.debug("POST {} req {}".format(url, headers))
 
         try:  # error checking
             r = self.request(
@@ -303,7 +303,7 @@ class BQServer(Session):
             )
             r.raise_for_status()
         except requests.exceptions.HTTPError:
-            log.exception("In push request: %s %s %s" % (method, url, r.content))
+            log.exception("In push request: {} {} {}".format(method, url, r.content))
             raise BQCommError(r)
 
         if path:
@@ -314,7 +314,7 @@ class BQServer(Session):
             return r.content
 
 
-class BQSession(object):
+class BQSession:
     """
     Top level Bisque communication object
     """
@@ -664,7 +664,7 @@ class BQSession(object):
         if not isinstance(xml, str):
             xml = self.factory.to_string(xml)
 
-        log.debug("postxml %s  content %s " % (url, xml))
+        log.debug("postxml {}  content {} ".format(url, xml))
 
         url = self.c.prepare_url(url, **params)
 
@@ -761,7 +761,7 @@ class BQSession(object):
         if root is None:
             raise BQApiError("Not a service type")
         if query:
-            path = "%s?%s" % (path, urllib.parse.urlencode(query))
+            path = "{}?{}".format(path, urllib.parse.urlencode(query))
         return urllib.parse.urljoin(root, path)
 
     def _load_services(self):
