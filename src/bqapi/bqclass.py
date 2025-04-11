@@ -51,25 +51,23 @@ __author__ = "Dmitry Fedorov and Kris Kvilekval"
 __version__ = "0.1"
 __revision__ = "$Rev$"
 __date__ = "$Date$"
-__copyright__ = (
-    "Center for BioImage Informatics, University California, Santa Barbara"
-)
+__copyright__ = "Center for BioImage Informatics, University California, Santa Barbara"
 
+import collections
+import inspect
+import io
+import logging
+import math
 import os
 import sys
-import math
-import io
-import inspect
-import logging
 import tempfile
-import collections
 
 try:
     from lxml import etree
 except ImportError:
     import xml.etree.ElementTree as etree
-from .xmldict import xml2nv
 
+from .xmldict import xml2nv
 
 log = logging.getLogger("bqapi.class")
 
@@ -148,9 +146,7 @@ class BQNode(object):
     def __str__(self):
         return "(%s:%s)" % (
             self.xmltag,
-            ",".join(
-                ["%s=%s" % (f, getattr(self, f, "")) for f in self.xmlfields]
-            ),
+            ",".join(["%s=%s" % (f, getattr(self, f, "")) for f in self.xmlfields]),
         )
 
     def toTuple(self):
@@ -429,9 +425,7 @@ class BQImagePixels(object):
         response = image_service.fetch(url, stream=stream)
         if path is not None:
             with open(path, "wb") as fb:
-                for block in response.iter_content(
-                    chunk_size=16 * 1024 * 1024
-                ):  # 16MB
+                for block in response.iter_content(chunk_size=16 * 1024 * 1024):  # 16MB
                     fb.write(block)
                 response.close()
         else:
@@ -476,9 +470,7 @@ class BQImagePixels(object):
             # response.raw.decode_content = True
             return tifffile.imread(io.BytesIO(response.content))
 
-    def savearray(
-        self, fname, imdata=None, imshape=None, dtype=None, **kwargs
-    ):
+    def savearray(self, fname, imdata=None, imshape=None, dtype=None, **kwargs):
         try:
             import tifffile
         except ImportError:

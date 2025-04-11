@@ -1,15 +1,17 @@
-from bq.util.mkdir import _mkdir
+import os
 import posixpath
 import urllib
-import os
+
+from bq.util.mkdir import _mkdir
+
 
 def fetch_file(filename, url, dir):
     """
-        @param filename: name of the file fetching from the store
-        @param url: url of the store
-        @param dir: the directory the file will be placed in
-        
-        @return the local path to the file
+    @param filename: name of the file fetching from the store
+    @param url: url of the store
+    @param dir: the directory the file will be placed in
+
+    @return the local path to the file
     """
     _mkdir(url)
     _mkdir(dir)

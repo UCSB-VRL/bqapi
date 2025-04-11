@@ -1,18 +1,19 @@
-import pytest
 import os
-import numpy as np
-#import urllib
-from six.moves import urllib
 from datetime import datetime
 
-
-
-from bqapi import BQSession, BQServer
-from bqapi.util import  fetch_dataset
+import numpy as np
+import pytest
 from bq.util.mkdir import _mkdir
-from .util import fetch_file
+#import urllib
+from six.moves import urllib
+
+from bqapi import BQServer, BQSession
 from bqapi.comm import BQCommError
 from bqapi.util import *
+from bqapi.util import fetch_dataset
+
+from .util import fetch_file
+
 try:
     from lxml import etree
 except ImportError:
@@ -28,7 +29,7 @@ def image_uri(session, stores):
     """
         uploads an image
     """
-    resource = etree.Element ('resource', name=u'%s/%s'%(TEST_PATH, stores.files[0].name))
+    resource = etree.Element ('resource', name='%s/%s'%(TEST_PATH, stores.files[0].name))
     content = bqsession.postblob(store.files[0].location, xml=resource)
     return etree.XML(content)[0].attrib['uri']
 
@@ -38,7 +39,7 @@ def setup_fetchimageplanes():
         uploads an image
     """
     global image_uri
-    resource = etree.Element ('resource', name=u'%s/%s'%(TEST_PATH, filename1))
+    resource = etree.Element ('resource', name='%s/%s'%(TEST_PATH, filename1))
     content = bqsession.postblob(stores.files[0].location, xml=resource)
     image_uri = etree.XML(content)[0].attrib['uri']
 
@@ -53,7 +54,7 @@ def setup_fetchimagepixels():
         uploads an image
     """
     global image_uri
-    resource = etree.Element('resource', name=u'%s/%s'%(TEST_PATH, filename1))
+    resource = etree.Element('resource', name='%s/%s'%(TEST_PATH, filename1))
     content = bqsession.postblob(stores.files[0].location, xml=resource)
     image_uri = etree.XML(content)[0].attrib['uri']
 
@@ -68,7 +69,7 @@ def setup_fetchdataset():
     global dataset_uri
     dataset = etree.Element('dataset', name='test')
     for _ in xrange(4):
-        resource = etree.Element('resource', name=u'%s/%s'%(TEST_PATH, filename1))
+        resource = etree.Element('resource', name='%s/%s'%(TEST_PATH, filename1))
         content = bqsession.postblob(stores.files[0].location, xml=resource)
         value=etree.SubElement(dataset,'value', type="object")
         value.text = etree.XML(content)[0].attrib['uri']
@@ -87,7 +88,7 @@ def setup_fetchDataset():
     global dataset_uri
     dataset = etree.Element('dataset', name='test')
     for _ in xrange(4):
-        resource = etree.Element ('resource', name=u'%s/%s'%(TEST_PATH, filename1))
+        resource = etree.Element ('resource', name='%s/%s'%(TEST_PATH, filename1))
         content = bqsession.postblob(stores.files[0].location, xml=resource)
         value=etree.SubElement(dataset,'value', type="object")
         value.text = etree.XML(content)[0].attrib['uri']
@@ -105,7 +106,7 @@ def setup_saveimagepixels():
         uploads an image
     """
     global image_uri
-    resource = etree.Element('resource', name=u'%s/%s'%(TEST_PATH, filename1))
+    resource = etree.Element('resource', name='%s/%s'%(TEST_PATH, filename1))
     content = bqsession.postblob(stores.files[0].location, xml=resource)
     image_uri = etree.XML(content)[0].attrib['uri']
 
@@ -119,7 +120,7 @@ def setup_fetchImage():
         uploads an image
     """
     global image_uri
-    resource = etree.Element ('resource', name=u'%s/%s'%(TEST_PATH, filename1))
+    resource = etree.Element ('resource', name='%s/%s'%(TEST_PATH, filename1))
     content = bqsession.postblob(stores.files[0].location, xml=resource)
     image_uri = etree.XML(content)[0].attrib['uri']
 
@@ -285,7 +286,7 @@ def test_saveimagepixels():
     <image name="%s">
         <tag name="my_tag" value="test"/>
     </image>
-    """%u'%s/%s'%(TEST_PATH, filename1)
+    """%'%s/%s'%(TEST_PATH, filename1)
     #bqimage = fromXml(etree.XML(xmldoc))
     bqimage = bqsession.factory.from_string (xmldoc)
     try:

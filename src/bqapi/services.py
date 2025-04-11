@@ -1,15 +1,16 @@
+import json
+import logging
 import os
+import random
+import shutil
+import string
+import tempfile
+
+from six.moves import urllib
+
 # import urllib
 # import urlparse
 
-import random
-import string
-import logging
-import tempfile
-import json
-import shutil
-
-from six.moves import urllib
 
 try:
     from lxml import etree
@@ -22,9 +23,9 @@ except ImportError:
     logging.warn("pytables services not available")
 
 from requests_toolbelt import MultipartEncoder
-from .util import normalize_unicode
-from .exception import BQCommError
 
+from .exception import BQCommError
+from .util import normalize_unicode
 
 # DEFAULT_TIMEOUT=None
 DEFAULT_TIMEOUT = 60 * 60  # 1 hour
@@ -99,9 +100,7 @@ class BaseServiceProxy(object):
         )
 
     def put(self, path=None, params=None, render=None, **kw):
-        return self.request(
-            path=path, params=params, render=render, method="put", **kw
-        )
+        return self.request(path=path, params=params, render=render, method="put", **kw)
 
     def delete(self, path=None, params=None, render=None, **kw):
         return self.request(
@@ -159,9 +158,7 @@ class BlobProxy(BaseServiceProxy):
             resource.set("name", os.path.basename(args_srcpath))
         return resource
 
-    def path_link(
-        self, srcpath, alias=None, resource_type=None, tag_file=None
-    ):
+    def path_link(self, srcpath, alias=None, resource_type=None, tag_file=None):
         url = urllib.parse.urljoin(
             self.session.service_map["blob_service"], "paths/insert"
         )
@@ -271,20 +268,14 @@ class DatasetProxy(BaseServiceProxy):
         @return new dataset if success or None
         """
         data = self.session.service("data_service")
-        dataset = data.fetch(
-            dataset_uniq, params={"view": "full"}, render="etree"
-        )
-        members = dataset.xpath(
-            'value[text()="%s"]' % data.construct(resource_uniq)
-        )
+        dataset = data.fetch(dataset_uniq, params={"view": "full"}, render="etree")
+        members = dataset.xpath('value[text()="%s"]' % data.construct(resource_uniq))
         for member in members:
             dataset.remove(member)
         if len(members):
             for val in dataset.iter("value"):
                 _ = val.attrib.pop("index", 0)
-            return data.put(
-                dataset_uniq, data=etree.tostring(dataset), render="etree"
-            )
+            return data.put(dataset_uniq, data=etree.tostring(dataset), render="etree")
         return None
 
 
@@ -293,14 +284,10 @@ class ModuleProxy(BaseServiceProxy):
         pass
 
     def register(self, engine_url):
-        return self.request(
-            path="register_engine", params={"engine_url": engine_url}
-        )
+        return self.request(path="register_engine", params={"engine_url": engine_url})
 
     def unregister(self, engine_url):
-        return self.request(
-            path="unregister_engine", params={"engine_url": engine_url}
-        )
+        return self.request(path="unregister_engine", params={"engine_url": engine_url})
 
 
 class TableProxy(BaseServiceProxy):
@@ -317,9 +304,7 @@ class TableProxy(BaseServiceProxy):
                     "%s;%s"
                     % (
                         single_slice.start or "",
-                        ""
-                        if single_slice.stop is None
-                        else single_slice.stop - 1,
+                        "" if single_slice.stop is None else single_slice.stop - 1,
                     )
                 )
             elif isinstance(single_slice, int):
@@ -394,9 +379,7 @@ class ExportProxy(BaseServiceProxy):
             for key, val in list(kw.items())
             if key in self.valid_param and val is not None
         }
-        response = self.fetch(
-            "stream", params=params, stream=kw.pop("stream", True)
-        )
+        response = self.fetch("stream", params=params, stream=kw.pop("stream", True))
         return response
 
     def fetch_export_local(self, localpath, stream=True, **kw):

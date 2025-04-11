@@ -51,21 +51,18 @@ DESCRIPTION
 
 """
 
-import sys
-
+import itertools
 # import urlparse
 # import urllib
 import logging
-import itertools
 import posixpath
-
-from six.moves import urllib
-
+import sys
 
 import requests
-from requests.auth import HTTPBasicAuth
-from requests.auth import AuthBase
 from requests import Session
+from requests.auth import AuthBase, HTTPBasicAuth
+from six.moves import urllib
+
 # from requests_toolbelt import MultipartEncoder
 
 try:
@@ -79,11 +76,11 @@ try:
 except ImportError:
     import xml.etree.ElementTree as etree
 
-from .bqclass import BQMex, BQNode, BQFactory
+from .bqclass import BQFactory, BQMex, BQNode
+from .exception import BQApiError, BQCommError
+from .services import ServiceFactory
 # from .util import d2xml  # parse_qs, make_qs, xml2d, d2xml, normalize_unicode
 from .xmldict import d2xml
-from .services import ServiceFactory
-from .exception import BQCommError, BQApiError
 
 try:
     from .casauth import caslogin
@@ -116,7 +113,7 @@ class MexAuth(AuthBase):
         elif user in token.split(":")[0]:  # check if token contains user
             self.username = "Mex %s" % (token)
         else:
-            self.username = "Mex %s:%s" % (user, token)
+            self.username = "Mex {}:{}".format(user, token)
 
     def __call__(self, r):
         """
@@ -135,7 +132,7 @@ class BQServer(Session):
     """
 
     def __init__(self):
-        super(BQServer, self).__init__()
+        super().__init__()
         # Disable https session authentication..
         # self.verify = False
         self.root = None
@@ -196,9 +193,7 @@ class BQServer(Session):
             raise BQApiError("No root provided")
 
         # query
-        query = [
-            "%s=%s" % (k, v) for k, v in urllib.parse.parse_qsl(u.query, True)
-        ]
+        query = ["{}={}".format(k, v) for k, v in urllib.parse.parse_qsl(u.query, True)]
         unordered_query = []
         ordered_query = []
 
@@ -210,16 +205,12 @@ class BQServer(Session):
                     ordered_query.append("%s=%s" % odict.popitem(False))
 
         if params:
-            unordered_query = [
-                "%s=%s" % (k, v) for k, v in list(params.items())
-            ]
+            unordered_query = ["{}={}".format(k, v) for k, v in list(params.items())]
 
         query = query + unordered_query + ordered_query
         query = "&".join(query)
 
-        return urllib.parse.urlunsplit(
-            [scheme, netloc, u.path, query, u.fragment]
-        )
+        return urllib.parse.urlunsplit([scheme, netloc, u.path, query, u.fragment])
 
     def webreq(self, method, url, headers=None, path=None, **params):
         """
@@ -299,7 +290,7 @@ class BQServer(Session):
         @exception: BQCommError if the requests returns an error code and
         message
         """
-        log.debug("POST %s req %s" % (url, headers))
+        log.debug("POST {} req {}".format(url, headers))
 
         try:  # error checking
             r = self.request(
@@ -312,9 +303,7 @@ class BQServer(Session):
             )
             r.raise_for_status()
         except requests.exceptions.HTTPError:
-            log.exception(
-                "In push request: %s %s %s" % (method, url, r.content)
-            )
+            log.exception("In push request: {} {} {}".format(method, url, r.content))
             raise BQCommError(r)
 
         if path:
@@ -325,7 +314,7 @@ class BQServer(Session):
             return r.content
 
 
-class BQSession(object):
+class BQSession:
     """
     Top level Bisque communication object
     """
@@ -348,9 +337,7 @@ class BQSession(object):
         mex = BQMex()
         mex.name = moduleuri or "script:%s" % " ".join(sys.argv)
         mex.status = "RUNNING"
-        self.mex = self.save(
-            mex, url=self.service_url("module_service", "mex")
-        )
+        self.mex = self.save(mex, url=self.service_url("module_service", "mex"))
         if self.mex:
             mextoken = self.mex.resource_uniq
             self.c.authenticate_mex(mextoken, user)
@@ -373,9 +360,7 @@ class BQSession(object):
         users = r.findall('./tag[@name="user"]')
         return len(users) > 0
 
-    def init(
-        self, bisque_url, credentials=None, moduleuri=None, create_mex=False
-    ):
+    def init(self, bisque_url, credentials=None, moduleuri=None, create_mex=False):
         """Create  session by connect to with bisque_url
 
         @param bisque_url: The bisque root or MEX url
@@ -410,9 +395,7 @@ class BQSession(object):
             )
         return self
 
-    def init_local(
-        self, user, pwd, moduleuri=None, bisque_root=None, create_mex=True
-    ):
+    def init_local(self, user, pwd, moduleuri=None, bisque_root=None, create_mex=True):
         """
         Initalizes a local session
 
@@ -435,9 +418,7 @@ class BQSession(object):
         self.c.authenticate_basic(user, pwd)
         self._load_services()
         if not self._check_session():
-            log.error(
-                "Session failed to be created.. please check credentials"
-            )
+            log.error("Session failed to be created.. please check credentials")
             return None
 
         self.mex = None
@@ -473,9 +454,7 @@ class BQSession(object):
         self.mex = self.load(mex_url, view="deep")
         return self
 
-    def init_cas(
-        self, user, pwd, moduleuri=None, bisque_root=None, create_mex=False
-    ):
+    def init_cas(self, user, pwd, moduleuri=None, bisque_root=None, create_mex=False):
         """Initalizes a cas session
 
         @param: user - a bisque user
@@ -507,9 +486,7 @@ class BQSession(object):
         caslogin(self.c, bisque_root + "/auth_service/login", user, pwd)
         self._load_services()
         if not self._check_session():
-            log.error(
-                "Session failed to be created.. please check credentials"
-            )
+            log.error("Session failed to be created.. please check credentials")
             return None
         self.mex = None
 
@@ -547,9 +524,7 @@ class BQSession(object):
     def parameter(self, name):
         if self.mex is None:
             return None
-        return self.mex.xmltree.find(
-            'tag[@name="inputs"]//tag[@name="%s"]' % name
-        )
+        return self.mex.xmltree.find('tag[@name="inputs"]//tag[@name="%s"]' % name)
 
     def get_value_safe(self, v, t):
         try:
@@ -601,11 +576,7 @@ class BQSession(object):
         """
 
         def _xml2dict(e):
-            kids = {
-                key: e.attrib[key]
-                for key in e.attrib
-                if key in ["type", "value"]
-            }
+            kids = {key: e.attrib[key] for key in e.attrib if key in ["type", "value"]}
             if e.text:
                 kids["value"] = e.text
             for k, g in itertools.groupby(e, lambda x: x.tag):
@@ -641,9 +612,7 @@ class BQSession(object):
         p = {}
         if self.mex is None:
             return p
-        for exop in self.mex.xmltree.iterfind(
-            'tag[@name="execute_options"]/tag'
-        ):
+        for exop in self.mex.xmltree.iterfind('tag[@name="execute_options"]/tag'):
             p[exop.get("name")] = exop.get("value")
         return p
 
@@ -695,7 +664,7 @@ class BQSession(object):
         if not isinstance(xml, str):
             xml = self.factory.to_string(xml)
 
-        log.debug("postxml %s  content %s " % (url, xml))
+        log.debug("postxml {}  content {} ".format(url, xml))
 
         url = self.c.prepare_url(url, **params)
 
@@ -792,7 +761,7 @@ class BQSession(object):
         if root is None:
             raise BQApiError("Not a service type")
         if query:
-            path = "%s?%s" % (path, urllib.parse.urlencode(query))
+            path = "{}?{}".format(path, urllib.parse.urlencode(query))
         return urllib.parse.urljoin(root, path)
 
     def _load_services(self):
@@ -888,9 +857,7 @@ class BQSession(object):
                         assert len(hits) == 1
                         hits[0].extend(list(tg))
                         was_merged = True
-                        log.debug(
-                            "merged '%s' section in MEX", tg.get("name", "")
-                        )
+                        log.debug("merged '%s' section in MEX", tg.get("name", ""))
                 if not was_merged:
                     mex.append(tg)
 
@@ -903,9 +870,7 @@ class BQSession(object):
         #                  'status' : status,
         #                  'tag' : tags,
         #                  'gobject': gobjects }}
-        content = self.postxml(
-            self.mex.uri, mex, view="deep" if reload else "short"
-        )
+        content = self.postxml(self.mex.uri, mex, view="deep" if reload else "short")
         if reload and content is not None:
             self.mex = self.factory.from_string(content)
             return self.mex
@@ -935,9 +900,7 @@ class BQSession(object):
                 merge=True,
             )
         except BQCommError as ce:
-            log.error(
-                "Problem during finish mex %s" % ce.response.request.headers
-            )
+            log.error("Problem during finish mex %s" % ce.response.request.headers)
             try:
                 return self.update_mex(
                     status="FAILED",
@@ -967,9 +930,7 @@ class BQSession(object):
     ##############################
     # Module control
     ##############################
-    def run_modules(
-        self, module_list, pre_run=None, post_run=None, callback_fct=None
-    ):
+    def run_modules(self, module_list, pre_run=None, post_run=None, callback_fct=None):
         """Run one or more modules in parallel.
 
         :param module_list: List of modules to run
@@ -998,9 +959,7 @@ class BQSession(object):
         tag_query=None, tag_order=None, offset=None, limit=None
         """
         results = []
-        queryurl = self.service_url(
-            "data_service", path=resource_type, query=kw
-        )
+        queryurl = self.service_url("data_service", path=resource_type, query=kw)
         items = self.fetchxml(queryurl)
         for item in items:
             results.append(self.factory.from_etree(item))
@@ -1041,7 +1000,7 @@ class BQSession(object):
         @return
         """
         try:
-            _ = bqo # original
+            _ = bqo  # original
 
             # Find an object (or parent with a valild uri)
             url = url or bqo.uri

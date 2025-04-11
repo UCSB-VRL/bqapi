@@ -1,6 +1,6 @@
 import pytest
-
 from lxml import etree
+
 from bqapi.bqclass import BQFactory
 
 pytestmark = pytest.mark.unit

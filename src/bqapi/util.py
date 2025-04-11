@@ -1,10 +1,10 @@
-import os
-import shutil
-
 # import urllib
 # import urlparse
 # import time
 import logging
+import os
+import shutil
+
 from six.moves import urllib
 
 # from lxml import etree as ET
@@ -58,9 +58,7 @@ if os.name == "nt":
 else:
 
     def url2localpath(url):
-        url = url.encode(
-            "utf-8"
-        )  # safegurd against un-encoded values in the DB
+        url = url.encode("utf-8")  # safegurd against un-encoded values in the DB
         path = urllib.parse.urlparse(url).path
         return urllib.parse.unquote(path)
 
@@ -68,6 +66,7 @@ else:
         url = urllib.parse.quote(path.encode("utf-8"))
         url = "file://%s" % url
         return url
+
 
 #####################################################
 
