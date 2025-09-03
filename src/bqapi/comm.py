@@ -376,7 +376,7 @@ class BQSession:
             auth_service = self.service("auth_service")
             logins = auth_service.login_providers(render="xml")
             login_type = None
-            if logins is not None and logins[0]:
+            if logins is not None and len(logins) > 0:
                 login_type = logins[0].get("type")
             if login_type == "cas":
                 return self.init_cas(
