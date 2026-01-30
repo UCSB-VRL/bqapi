@@ -24,15 +24,20 @@ Upload your first image to BisQue using our tutorial!
 
 ## Development
 
-For development, follow [this guide](https://towardsdatascience.com/how-to-upload-your-python-package-to-pypi-de1b363a1b3) and [this repo](https://github.com/gmyrianthous/example-publish-pypi).
+This project uses `uv` for local development and packaging.
+
+```
+uv venv
+uv pip install -e ".[dev]"
+```
 
 
 ## Contribute
 
 1. Clone repo
-2. Make any necessary changes to source code, setup.py, and setup.cfg
-3. Run `python setup.py sdist` on main folder
-4. Install twin if not installed, `pip install twine`
-5. Make sure to have PyPi account credentials
-6. run `twine upload dist/*` from  main folder
+2. Make any necessary changes to source code and `pyproject.toml`
+3. Build: `uv build`
+4. Install twine if needed: `uv pip install twine`
+5. Make sure to have PyPI account credentials
+6. Publish: `twine upload dist/*`
 7. Enter username and password

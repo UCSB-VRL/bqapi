@@ -1,7 +1,43 @@
+[build-system]
+requires = ["setuptools>=69.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bqapi-ucsb"
+version = "1.0.7"
+description = "Python API for interacting with BisQue"
+readme = "README.md"
+license = { file = "LICENSE.txt" }
+authors = [{ name = "Bisque Team", email = "amil@ucsb.edu" }]
+keywords = ["API", "Bisque"]
+dependencies = [
+  "six",
+  "lxml",
+  "requests==2.32.3",
+  "requests-toolbelt",
+]
+
+[project.optional-dependencies]
+dev = [
+  "black>=23.12.0",
+  "mypy>=1.8.0",
+  "pytest>=7.4.0",
+  "ruff>=0.1.9",
+]
+
+[project.urls]
+Homepage = "https://github.com/UCSB-VRL/bisqueUCSB"
+Repository = "https://github.com/UCSB-VRL/bisqueUCSB"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.ruff]
-# Follow Flake8's behavior
-lint.select = ["E", "F", "W", "C90"]  # Enables Flake8-compatible rules
-lint.ignore = []                      # Add rules to ignore
+lint.select = ["E", "F", "W", "C90"]
+lint.ignore = []
 line-length = 79
 exclude = ["venv", ".git", "__pycache__", "**/tests/**"]
-lint.mccabe.max-complexity = 25  # Set your desired threshold
+lint.mccabe.max-complexity = 25
